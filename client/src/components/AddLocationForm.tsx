@@ -38,11 +38,16 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
     try {
       // Create the location object from form data
       // Format to match the BigCommerce API spec exactly
+      // Convert checkbox "on" value to boolean
+      const isActive = data.is_active === "on" ? true : 
+                      data.is_active === undefined ? true : 
+                      Boolean(data.is_active);
+                      
       const locationData = {
         code: data.code,
         label: data.name,
         type_id: data.type,
-        enabled: data.is_active === undefined ? true : data.is_active,
+        enabled: isActive, // Ensure this is a boolean
         managed_by_external_source: false, // Required field per spec
         time_zone: "Etc/UTC", // Required field per spec
         address: {
