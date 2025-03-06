@@ -6,18 +6,20 @@ import { Label } from '@/components/ui/label';
 
 interface CredentialsCardProps {
   storeHash: string;
-  setStoreHash: (value: string) => void;
+  onStoreHashChange: (value: string) => void;
   accessToken: string;
-  setAccessToken: (value: string) => void;
-  onLoadClick: () => void;
+  onAccessTokenChange: (value: string) => void;
+  onSubmit: () => void;
+  isLoading?: boolean;
 }
 
 const CredentialsCard: React.FC<CredentialsCardProps> = ({
   storeHash,
-  setStoreHash,
+  onStoreHashChange,
   accessToken,
-  setAccessToken,
-  onLoadClick
+  onAccessTokenChange,
+  onSubmit,
+  isLoading = false
 }) => {
   return (
     <Card className="mb-6">
@@ -31,7 +33,7 @@ const CredentialsCard: React.FC<CredentialsCardProps> = ({
               type="text"
               placeholder="abc123"
               value={storeHash}
-              onChange={(e) => setStoreHash(e.target.value)}
+              onChange={(e) => onStoreHashChange(e.target.value)}
               className="w-full"
             />
             <p className="mt-1 text-xs text-gray-500">The unique identifier for your BigCommerce store</p>
@@ -43,7 +45,7 @@ const CredentialsCard: React.FC<CredentialsCardProps> = ({
               type="password"
               placeholder="••••••••••••••••••••••••••••••"
               value={accessToken}
-              onChange={(e) => setAccessToken(e.target.value)}
+              onChange={(e) => onAccessTokenChange(e.target.value)}
               className="w-full"
             />
             <p className="mt-1 text-xs text-gray-500">Your BigCommerce API access token</p>
@@ -51,8 +53,8 @@ const CredentialsCard: React.FC<CredentialsCardProps> = ({
         </div>
         <div className="mt-4 flex justify-end">
           <Button 
-            onClick={onLoadClick}
-            disabled={!storeHash || !accessToken}
+            onClick={onSubmit}
+            disabled={!storeHash || !accessToken || isLoading}Token}
             className="flex items-center"
           >
             <svg 
