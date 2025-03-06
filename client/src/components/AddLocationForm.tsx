@@ -47,6 +47,7 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
           state_or_province: data.state_or_province,
           postal_code: data.postal_code,
           country_code: data.country_code,
+          email: data.email,
           geo_coordinates: {
             latitude: data.latitude,
             longitude: data.longitude
@@ -103,6 +104,17 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                   className={errors.name ? "border-red-500" : ""}
                 />
                 {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email*</Label>
+                <Input 
+                  id="email" 
+                  type="email"
+                  {...register("email", { required: "Email is required" })} 
+                  placeholder="warehouse@example.com"
+                  className={errors.email ? "border-red-500" : ""}
+                />
+                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
               </div>
 
               <div className="space-y-2">
