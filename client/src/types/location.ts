@@ -8,6 +8,10 @@ export interface Address {
   country_code?: string;
   phone?: string;
   email?: string;
+  geo_coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 export interface Location {

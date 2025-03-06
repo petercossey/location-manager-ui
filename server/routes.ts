@@ -53,7 +53,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             postal_code: address?.zip || '',
             country_code: address?.country_code || '',
             phone: address?.phone || '',
-            email: address?.email || ''
+            email: address?.email || '',
+            geo_coordinates: address?.geo_coordinates
           };
           
           // Return the mapped location

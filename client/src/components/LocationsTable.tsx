@@ -35,6 +35,29 @@ const LocationsTable: React.FC<LocationsTableProps> = ({ locations }) => {
                 <TableCell className="whitespace-nowrap">{location.type}</TableCell>
                 <TableCell className="whitespace-nowrap">{location.code}</TableCell>
                 <TableCell>
+                  <div className="text-sm">
+                    {location.address.address1 && (
+                      <>
+                        {location.address.address1}
+                        {location.address.address2 && `, ${location.address.address2}`}
+                        <br />
+                      </>
+                    )}
+                    {location.address.city && (
+                      <>
+                        {location.address.city}
+                        {location.address.state_or_province && `, ${location.address.state_or_province}`}
+                        {location.address.postal_code && ` ${location.address.postal_code}`}
+                        <br />
+                      </>
+                    )}
+                    {location.address.geo_coordinates && (
+                      <span className="text-xs text-gray-500">
+                        Lat: {location.address.geo_coordinates.latitude.toFixed(6)}, 
+                        Lng: {location.address.geo_coordinates.longitude.toFixed(6)}
+                      </span>
+                    )}
+                  </div>
                   <div>{location.address.address1 || 'No address provided'}</div>
                   {location.address.address2 && <div>{location.address.address2}</div>}
                   <div>
