@@ -60,8 +60,8 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
           postal_code: data.postal_code,
           country_code: data.country_code,
           geo_coordinates: {
-            latitude: parseFloat(data.latitude),
-            longitude: parseFloat(data.longitude)
+            latitude: data.latitude,
+            longitude: data.longitude
           }
         }
       };
@@ -135,13 +135,16 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                 <Input 
                   id="latitude" 
                   type="number"
-                  step="0.000001"
+                  step="any"
                   {...register("latitude", { 
                     required: "Latitude is required",
-                    min: { value: -90, message: "Latitude must be between -90 and 90" },
-                    max: { value: 90, message: "Latitude must be between -90 and 90" }
+                    valueAsNumber: true,
+                    validate: {
+                      validRange: (value) => 
+                        (value >= -90 && value <= 90) || "Latitude must be between -90 and 90"
+                    }
                   })} 
-                  placeholder="40.7128"
+                  placeholder="-33.860582"
                   className={errors.latitude ? "border-red-500" : ""}
                 />
                 {errors.latitude && <p className="text-red-500 text-sm">{errors.latitude.message}</p>}
@@ -152,13 +155,16 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                 <Input 
                   id="longitude" 
                   type="number"
-                  step="0.000001"
+                  step="any"
                   {...register("longitude", { 
                     required: "Longitude is required",
-                    min: { value: -180, message: "Longitude must be between -180 and 180" },
-                    max: { value: 180, message: "Longitude must be between -180 and 180" }
+                    valueAsNumber: true,
+                    validate: {
+                      validRange: (value) => 
+                        (value >= -180 && value <= 180) || "Longitude must be between -180 and 180"
+                    }
                   })} 
-                  placeholder="-74.0060"
+                  placeholder="151.2057579"
                   className={errors.longitude ? "border-red-500" : ""}
                 />
                 {errors.longitude && <p className="text-red-500 text-sm">{errors.longitude.message}</p>}
