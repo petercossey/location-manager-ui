@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -25,20 +24,9 @@ interface FormData {
   state_or_province: string;
   postal_code: string;
   country_code: string;
-}
-
-interface FormData {
-  name: string;
-  code: string;
-  type: string;
-  is_active: boolean;
-  address1: string;
-  city: string;
-  state_or_province: string;
-  postal_code: string;
-  country_code: string;
-  latitude: string;
-  longitude: string;
+  email: string;
+  latitude: number;
+  longitude: number;
 }
 
 const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash, accessToken }) => {
@@ -84,7 +72,7 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
         title: "Success",
         description: "Location has been created successfully",
       });
-      
+
       reset(); // Reset form
       if (onSuccess) onSuccess();
     } catch (error) {
@@ -116,7 +104,7 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                 />
                 {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="code">Location Code*</Label>
                 <Input 
@@ -128,7 +116,7 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                 {errors.code && <p className="text-red-500 text-sm">{errors.code.message}</p>}
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="latitude">Latitude*</Label>
@@ -149,7 +137,7 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                 />
                 {errors.latitude && <p className="text-red-500 text-sm">{errors.latitude.message}</p>}
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="longitude">Longitude*</Label>
                 <Input 
@@ -170,7 +158,7 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                 {errors.longitude && <p className="text-red-500 text-sm">{errors.longitude.message}</p>}
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="type">Location Type*</Label>
@@ -189,16 +177,16 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                 <input type="hidden" {...register("type", { required: "Type is required" })} defaultValue="PHYSICAL" />
                 {errors.type && <p className="text-red-500 text-sm">{errors.type.message}</p>}
               </div>
-              
+
               <div className="flex items-center space-x-2 pt-6">
                 <Checkbox id="is_active" {...register("is_active")} defaultChecked />
                 <Label htmlFor="is_active">Active Location</Label>
               </div>
             </div>
-            
+
             <div className="pt-2">
               <h3 className="text-lg font-medium mb-2">Address Information</h3>
-              
+
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="address1">Street Address*</Label>
@@ -210,7 +198,7 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                   />
                   {errors.address1 && <p className="text-red-500 text-sm">{errors.address1.message}</p>}
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="city">City*</Label>
@@ -222,7 +210,7 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                     />
                     {errors.city && <p className="text-red-500 text-sm">{errors.city.message}</p>}
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="state_or_province">State/Province*</Label>
                     <Input 
@@ -234,19 +222,19 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                     {errors.state_or_province && <p className="text-red-500 text-sm">{errors.state_or_province.message}</p>}
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="postal_code">Postal Code*</Label>
                     <Input 
                       id="postal_code" 
                       {...register("postal_code", { required: "Postal code is required" })} 
-                      placeholder="94103"
+                      placeholder="94105"
                       className={errors.postal_code ? "border-red-500" : ""}
                     />
                     {errors.postal_code && <p className="text-red-500 text-sm">{errors.postal_code.message}</p>}
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="country_code">Country Code*</Label>
                     <Input 
@@ -258,9 +246,27 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                     {errors.country_code && <p className="text-red-500 text-sm">{errors.country_code.message}</p>}
                   </div>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email*</Label>
+                  <Input 
+                    id="email" 
+                    type="email"
+                    {...register("email", { 
+                      required: "Email is required",
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: "Invalid email address"
+                      }
+                    })} 
+                    placeholder="contact@example.com"
+                    className={errors.email ? "border-red-500" : ""}
+                  />
+                  {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+                </div>
               </div>
             </div>
-            
+
             <div className="pt-4">
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Creating..." : "Create Location"}
