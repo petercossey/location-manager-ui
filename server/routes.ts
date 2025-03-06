@@ -133,45 +133,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         );
 
-        // Map the API response to match our client model
-        const { 
-          operating_hours, 
-          special_hours,
-          label,
-          enabled,
-          type_id,
-          storefront_visibility,
-          address,
-          ...rest
-        } = response.data.data;
-        
-        // Map the address fields
-        const mappedAddress = {
-          address1: address?.address1 || '',
-          address2: address?.address2 || '',
-          city: address?.city || '',
-          state_or_province: address?.state || '',
-          postal_code: address?.zip || '',
-          country_code: address?.country_code || '',
-          phone: address?.phone || '',
-          email: address?.email || '',
-          geo_coordinates: address?.geo_coordinates
-        };
-        
-        // Return the mapped location
-        const mappedLocation = {
-          ...rest,
-          name: label,
-          type: type_id,
-          is_active: enabled,
-          is_default: storefront_visibility,
-          address: mappedAddress
-        };
-
+        // API returns transaction_id, not the created location data
+        // We should return success without trying to map the data
         return res.status(201).json({ 
-          location: mappedLocation,
+          success: true,
+          transaction_id: response.data.transaction_id,
           message: "Location created successfully" 
         });
+        
+        // The BigCommerce Locations API POST endpoint returns a transaction_id,
+        // not the created location data (as per the OpenAPI spec)
       } catch (error: any) {
         // Handle API errors
         const statusCode = error.response?.status || 500;

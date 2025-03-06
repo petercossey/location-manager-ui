@@ -87,7 +87,7 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
       }
 
       // Log the response and location data
-      console.log('Location created:', response.data);
+      console.log('Location created:', responseData);
 
       // Show success message
       toast({
