@@ -35,9 +35,24 @@ const LocationsTable: React.FC<LocationsTableProps> = ({ locations }) => {
                 <TableCell className="whitespace-nowrap">{location.type}</TableCell>
                 <TableCell className="whitespace-nowrap">{location.code}</TableCell>
                 <TableCell>
-                  <div>{location.address.address1}</div>
+                  <div>{location.address.address1 || 'No address provided'}</div>
                   {location.address.address2 && <div>{location.address.address2}</div>}
-                  <div>{`${location.address.city || ''}, ${location.address.state_or_province || ''} ${location.address.postal_code || ''}`}</div>
+                  <div>
+                    {[
+                      location.address.city, 
+                      location.address.state_or_province, 
+                      location.address.postal_code
+                    ].filter(Boolean).join(', ')}
+                  </div>
+                  {location.address.country_code && (
+                    <div>Country: {location.address.country_code}</div>
+                  )}
+                  {location.address.email && (
+                    <div>Email: {location.address.email}</div>
+                  )}
+                  {location.address.phone && (
+                    <div>Phone: {location.address.phone}</div>
+                  )}
                 </TableCell>
                 <TableCell className="whitespace-nowrap">
                   <Badge 

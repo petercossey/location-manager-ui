@@ -7,7 +7,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Proxy endpoint to fetch locations from BigCommerce API
   app.get("/api/locations", async (req, res) => {
     try {
-      const { store_hash, access_token } = req.query;
+      const store_hash = req.query.store_hash as string;
+      const access_token = req.query.access_token as string;
 
       // Validate required parameters
       if (!store_hash || !access_token) {
@@ -18,20 +19,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Make request to BigCommerce API
       try {
-        const response = await axios({
-          method: "GET",
-          url: `https://api.bigcommerce.com/stores/${store_hash}/v3/inventory/locations`,
-          headers: {
-            "X-Auth-Token": access_token,
-            "Accept": "application/json",
-            "Content-Type": "application/json"
+        const response = await axios.get(
+          `https://api.bigcommerce.com/stores/${store_hash}/v3/inventory/locations`,
+          {
+            headers: {
+              "X-Auth-Token": access_token,
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            }
           }
-        });
+        );
 
-        // Filter out operating_hours and special_hours fields
+        // Map API response fields to match our client-side model
         const locations = response.data.data.map((location: any) => {
-          const { operating_hours, special_hours, ...rest } = location;
-          return rest;
+          // Remove operating_hours and special_hours fields and map the rest
+          const { 
+            operating_hours, 
+            special_hours,
+            label,
+            enabled,
+            type_id,
+            storefront_visibility,
+            address,
+            ...rest
+          } = location;
+          
+          // Map the address fields
+          const mappedAddress = {
+            address1: address?.address1 || '',
+            address2: address?.address2 || '',
+            city: address?.city || '',
+            state_or_province: address?.state || '',
+            postal_code: address?.zip || '',
+            country_code: address?.country_code || '',
+            phone: address?.phone || '',
+            email: address?.email || ''
+          };
+          
+          // Return the mapped location
+          return {
+            ...rest,
+            name: label,
+            type: type_id,
+            is_active: enabled,
+            is_default: storefront_visibility,
+            address: mappedAddress
+          };
         });
 
         return res.json({ 
