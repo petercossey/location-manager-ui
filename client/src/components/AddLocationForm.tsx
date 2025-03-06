@@ -11,8 +11,8 @@ import { useToast } from '@/components/ui/use-toast';
 
 interface AddLocationFormProps {
   onSuccess?: () => void;
-  storeHash?: string;
-  accessToken?: string;
+  storeHash: string;
+  accessToken: string;
 }
 
 interface FormData {
@@ -25,6 +25,20 @@ interface FormData {
   state_or_province: string;
   postal_code: string;
   country_code: string;
+}
+
+interface FormData {
+  name: string;
+  code: string;
+  type: string;
+  is_active: boolean;
+  address1: string;
+  city: string;
+  state_or_province: string;
+  postal_code: string;
+  country_code: string;
+  latitude: string;
+  longitude: string;
 }
 
 const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash, accessToken }) => {
@@ -45,6 +59,10 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
           state_or_province: data.state_or_province,
           postal_code: data.postal_code,
           country_code: data.country_code,
+          geo_coordinates: {
+            latitude: parseFloat(data.latitude),
+            longitude: parseFloat(data.longitude)
+          }
         }
       };
 
@@ -108,6 +126,42 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                   className={errors.code ? "border-red-500" : ""}
                 />
                 {errors.code && <p className="text-red-500 text-sm">{errors.code.message}</p>}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="latitude">Latitude*</Label>
+                <Input 
+                  id="latitude" 
+                  type="number"
+                  step="0.000001"
+                  {...register("latitude", { 
+                    required: "Latitude is required",
+                    min: { value: -90, message: "Latitude must be between -90 and 90" },
+                    max: { value: 90, message: "Latitude must be between -90 and 90" }
+                  })} 
+                  placeholder="40.7128"
+                  className={errors.latitude ? "border-red-500" : ""}
+                />
+                {errors.latitude && <p className="text-red-500 text-sm">{errors.latitude.message}</p>}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="longitude">Longitude*</Label>
+                <Input 
+                  id="longitude" 
+                  type="number"
+                  step="0.000001"
+                  {...register("longitude", { 
+                    required: "Longitude is required",
+                    min: { value: -180, message: "Longitude must be between -180 and 180" },
+                    max: { value: 180, message: "Longitude must be between -180 and 180" }
+                  })} 
+                  placeholder="-74.0060"
+                  className={errors.longitude ? "border-red-500" : ""}
+                />
+                {errors.longitude && <p className="text-red-500 text-sm">{errors.longitude.message}</p>}
               </div>
             </div>
             
