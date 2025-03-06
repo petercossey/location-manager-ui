@@ -36,10 +36,11 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
   const onSubmit = async (data: FormData) => {
     try {
       // Create the location object from form data
+      // Format to match what the BigCommerce API expects via our server
       const locationData = {
         name: data.name,
         code: data.code,
-        type: parseInt(data.type) || 1, // Ensure type is a number
+        type: parseInt(data.type) || 1,
         is_active: data.is_active === undefined ? true : data.is_active,
         address: {
           address1: data.address1 || "",
@@ -48,11 +49,10 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
           state_or_province: data.state_or_province || "",
           postal_code: data.postal_code || "",
           country_code: data.country_code || "",
-          phone: data.phone || "",
-          email: data.email || "",
+          email: data.email || "",  // Make sure email is included
           geo_coordinates: {
-            latitude: typeof data.latitude === 'number' ? data.latitude : parseFloat(data.latitude || "0"),
-            longitude: typeof data.longitude === 'number' ? data.longitude : parseFloat(data.longitude || "0")
+            latitude: parseFloat(String(data.latitude)) || 0,
+            longitude: parseFloat(String(data.longitude)) || 0
           }
         }
       };
