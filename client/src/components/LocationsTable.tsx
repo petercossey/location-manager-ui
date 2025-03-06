@@ -58,15 +58,6 @@ const LocationsTable: React.FC<LocationsTableProps> = ({ locations }) => {
                       </span>
                     )}
                   </div>
-                  <div>{location.address.address1 || 'No address provided'}</div>
-                  {location.address.address2 && <div>{location.address.address2}</div>}
-                  <div>
-                    {[
-                      location.address.city, 
-                      location.address.state_or_province, 
-                      location.address.postal_code
-                    ].filter(Boolean).join(', ')}
-                  </div>
                   {location.address.country_code && (
                     <div>Country: {location.address.country_code}</div>
                   )}
