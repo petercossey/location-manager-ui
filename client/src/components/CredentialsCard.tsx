@@ -54,7 +54,7 @@ const CredentialsCard: React.FC<CredentialsCardProps> = ({
         <div className="mt-4 flex justify-end">
           <Button 
             onClick={onSubmit}
-            disabled={!storeHash || !accessToken || isLoading}Token}
+            disabled={!storeHash || !accessToken || isLoading}
             className="flex items-center"
           >
             <svg 
