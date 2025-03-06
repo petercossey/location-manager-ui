@@ -15,14 +15,14 @@ export interface Address {
 }
 
 export interface Location {
-  id: number;
+  id?: number;
   name: string;
   code: string;
   type: string;
   address: Address;
   is_active: boolean;
-  description?: string;
   is_default?: boolean;
+  description?: string;
   created_at?: string;
   updated_at?: string;
 }

@@ -92,6 +92,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Endpoint to create a new location
+  app.post("/api/locations", async (req, res) => {
+    try {
+      const store_hash = req.query.store_hash as string;
+      const access_token = req.query.access_token as string;
+
+      // Validate required parameters
+      if (!store_hash || !access_token) {
+        return res.status(400).json({ 
+          message: "Missing required parameters: store_hash and access_token are required" 
+        });
+      }
+
+      const locationData = req.body;
+
+      // Transform our client model back to BigCommerce API format
+      const apiLocationData = {
+        label: locationData.name,
+        code: locationData.code,
+        type_id: locationData.type,
+        enabled: locationData.is_active,
+        address: {
+          address1: locationData.address.address1,
+          city: locationData.address.city,
+          state: locationData.address.state_or_province,
+          zip: locationData.address.postal_code,
+          country_code: locationData.address.country_code
+        }
+      };
+
+      try {
+        const response = await axios.post(
+          `https://api.bigcommerce.com/stores/${store_hash}/v3/inventory/locations`,
+          apiLocationData,
+          {
+            headers: {
+              "X-Auth-Token": access_token,
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            }
+          }
+        );
+
+        // Map the API response to match our client model
+        const { 
+          operating_hours, 
+          special_hours,
+          label,
+          enabled,
+          type_id,
+          storefront_visibility,
+          address,
+          ...rest
+        } = response.data.data;
+        
+        // Map the address fields
+        const mappedAddress = {
+          address1: address?.address1 || '',
+          address2: address?.address2 || '',
+          city: address?.city || '',
+          state_or_province: address?.state || '',
+          postal_code: address?.zip || '',
+          country_code: address?.country_code || '',
+          phone: address?.phone || '',
+          email: address?.email || '',
+          geo_coordinates: address?.geo_coordinates
+        };
+        
+        // Return the mapped location
+        const mappedLocation = {
+          ...rest,
+          name: label,
+          type: type_id,
+          is_active: enabled,
+          is_default: storefront_visibility,
+          address: mappedAddress
+        };
+
+        return res.status(201).json({ 
+          location: mappedLocation,
+          message: "Location created successfully" 
+        });
+      } catch (error: any) {
+        // Handle API errors
+        const statusCode = error.response?.status || 500;
+        const errorMessage = error.response?.data?.title || 
+                            error.response?.data?.message || 
+                            error.message || 
+                            "Failed to create location";
+          
+        return res.status(statusCode).json({ 
+          message: errorMessage 
+        });
+      }
+    } catch (error) {
+      console.error("Server error:", error);
+      return res.status(500).json({ 
+        message: "An unexpected error occurred on the server" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
