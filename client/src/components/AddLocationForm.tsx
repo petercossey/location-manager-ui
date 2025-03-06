@@ -34,7 +34,12 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<FormData>();
   const { toast } = useToast();
 
+  const [apiError, setApiError] = React.useState<string | null>(null);
+
   const onSubmit = async (data: FormData) => {
+    // Clear any previous API errors
+    setApiError(null);
+    
     try {
       // Create the location object from form data
       // Format to match the BigCommerce API spec exactly
@@ -83,7 +88,16 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
       console.log("Response data:", responseData);
 
       if (!response.ok) {
-        throw new Error(responseData.message || 'Failed to create location');
+        // Store API error message for field-specific display
+        const errorMessage = responseData.message || 'Failed to create location';
+        
+        // If we have a specific error for the code field
+        if (errorMessage.includes("Code") && errorMessage.includes("not unique")) {
+          setApiError(errorMessage);
+        } else {
+          throw new Error(errorMessage);
+        }
+        return;
       }
 
       // Log the response and location data
@@ -95,6 +109,7 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
         description: "Location has been created successfully",
       });
 
+      setApiError(null); // Clear any errors
       reset(); // Reset form after successful submission
       if (onSuccess) onSuccess();
     } catch (error) {
@@ -114,6 +129,11 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
+          {apiError && !apiError.includes("Code") && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
+              {apiError}
+            </div>
+          )}
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -144,9 +164,12 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                   id="code" 
                   {...register("code", { required: "Code is required" })} 
                   placeholder="WH-001"
-                  className={errors.code ? "border-red-500" : ""}
+                  className={errors.code || apiError ? "border-red-500" : ""}
                 />
                 {errors.code && <p className="text-red-500 text-sm">{errors.code.message}</p>}
+                {apiError && apiError.includes("Code") && (
+                  <p className="text-red-500 text-sm mt-1">{apiError}</p>
+                )}
               </div>
             </div>
 
