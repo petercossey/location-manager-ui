@@ -39,18 +39,20 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
       const locationData = {
         name: data.name,
         code: data.code,
-        type: data.type,
-        is_active: data.is_active,
+        type: parseInt(data.type) || 1, // Ensure type is a number
+        is_active: data.is_active === undefined ? true : data.is_active,
         address: {
-          address1: data.address1,
-          city: data.city,
-          state_or_province: data.state_or_province,
-          postal_code: data.postal_code,
-          country_code: data.country_code,
-          email: data.email,
+          address1: data.address1 || "",
+          address2: data.address2 || "",
+          city: data.city || "",
+          state_or_province: data.state_or_province || "",
+          postal_code: data.postal_code || "",
+          country_code: data.country_code || "",
+          phone: data.phone || "",
+          email: data.email || "",
           geo_coordinates: {
-            latitude: data.latitude,
-            longitude: data.longitude
+            latitude: typeof data.latitude === 'number' ? data.latitude : parseFloat(data.latitude || "0"),
+            longitude: typeof data.longitude === 'number' ? data.longitude : parseFloat(data.longitude || "0")
           }
         }
       };
