@@ -106,23 +106,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const locationData = req.body;
+      console.log("Received location data:", JSON.stringify(locationData, null, 2));
 
-      // Transform our client model back to BigCommerce API format
-      const apiLocationData = {
-        label: locationData.name,
-        code: locationData.code,
-        type_id: locationData.type,
-        enabled: locationData.is_active,
-        address: {
-          address1: locationData.address.address1,
-          city: locationData.address.city,
-          state: locationData.address.state_or_province,
-          zip: locationData.address.postal_code,
-          country_code: locationData.address.country_code
-        }
-      };
+      if (!locationData) {
+        return res.status(422).json({ 
+          message: "JSON data is missing or invalid" 
+        });
+      }
+
+      // The body is already formatted correctly from the client
+      // We need to send exactly what the BigCommerce API expects
+      const apiLocationData = [locationData]; // API expects an array of locations
 
       try {
+        console.log("Sending to BigCommerce API:", JSON.stringify(apiLocationData, null, 2));
+        
         const response = await axios.post(
           `https://api.bigcommerce.com/stores/${store_hash}/v3/inventory/locations`,
           apiLocationData,

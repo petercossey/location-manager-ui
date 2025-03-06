@@ -20,6 +20,7 @@ interface FormData {
   type: string;
   is_active: boolean;
   address1: string;
+  address2?: string;
   city: string;
   state_or_province: string;
   postal_code: string;
@@ -27,7 +28,6 @@ interface FormData {
   email: string;
   latitude: number;
   longitude: number;
-  address2?: string; // Added address2 field
 }
 
 const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash, accessToken }) => {
@@ -37,39 +37,48 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
   const onSubmit = async (data: FormData) => {
     try {
       // Create the location object from form data
-      // Format to match the expected API format in routes.ts
+      // Format to match the BigCommerce API spec exactly
       const locationData = {
-        name: data.name,
         code: data.code,
-        type: parseInt(data.type) || 1,
-        is_active: data.is_active === undefined ? true : data.is_active,
+        label: data.name,
+        type_id: data.type,
+        enabled: data.is_active === undefined ? true : data.is_active,
+        managed_by_external_source: false, // Required field per spec
+        time_zone: "Etc/UTC", // Required field per spec
         address: {
-          address1: data.address1 || "",
-          address2: "",
-          city: data.city || "",
-          state_or_province: data.state_or_province || "",
-          postal_code: data.postal_code || "",
-          country_code: data.country_code || "",
-          email: data.email || "",
+          address1: data.address1,
+          address2: data.address2 || "",
+          city: data.city,
+          state: data.state_or_province,
+          zip: data.postal_code,
+          country_code: data.country_code,
+          email: data.email,
           geo_coordinates: {
             latitude: parseFloat(String(data.latitude)),
             longitude: parseFloat(String(data.longitude))
           }
-        }
+        },
+        storefront_visibility: true
       };
 
-      // Make API call to create location
+      console.log("Sending location data:", JSON.stringify(locationData, null, 2));
+
       const response = await fetch(`/api/locations?store_hash=${storeHash}&access_token=${accessToken}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(locationData),
+        body: JSON.stringify(locationData)
       });
 
+      console.log("Response status:", response.status);
+
+      // Parse response regardless of status for debugging
+      const responseData = await response.json();
+      console.log("Response data:", responseData);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create location');
+        throw new Error(responseData.message || 'Failed to create location');
       }
 
       // Log the response and location data
