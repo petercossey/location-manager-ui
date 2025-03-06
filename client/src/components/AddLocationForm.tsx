@@ -27,6 +27,7 @@ interface FormData {
   email: string;
   latitude: number;
   longitude: number;
+  address2?: string; // Added address2 field
 }
 
 const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash, accessToken }) => {
@@ -36,7 +37,7 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
   const onSubmit = async (data: FormData) => {
     try {
       // Create the location object from form data
-      // Format to match what the BigCommerce API expects via our server
+      // Format to match the expected API format in routes.ts
       const locationData = {
         name: data.name,
         code: data.code,
@@ -44,15 +45,15 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
         is_active: data.is_active === undefined ? true : data.is_active,
         address: {
           address1: data.address1 || "",
-          address2: data.address2 || "",
+          address2: "",
           city: data.city || "",
           state_or_province: data.state_or_province || "",
           postal_code: data.postal_code || "",
           country_code: data.country_code || "",
-          email: data.email || "",  // Make sure email is included
+          email: data.email || "",
           geo_coordinates: {
-            latitude: parseFloat(String(data.latitude)) || 0,
-            longitude: parseFloat(String(data.longitude)) || 0
+            latitude: parseFloat(String(data.latitude)),
+            longitude: parseFloat(String(data.longitude))
           }
         }
       };
@@ -71,12 +72,16 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
         throw new Error(errorData.message || 'Failed to create location');
       }
 
+      // Log the response and location data
+      console.log('Location created:', response.data);
+
+      // Show success message
       toast({
         title: "Success",
         description: "Location has been created successfully",
       });
 
-      reset(); // Reset form
+      reset(); // Reset form after successful submission
       if (onSuccess) onSuccess();
     } catch (error) {
       console.error('Error creating location:', error);
