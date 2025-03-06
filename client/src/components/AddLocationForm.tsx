@@ -258,24 +258,6 @@ const AddLocationForm: React.FC<AddLocationFormProps> = ({ onSuccess, storeHash,
                     {errors.country_code && <p className="text-red-500 text-sm">{errors.country_code.message}</p>}
                   </div>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email*</Label>
-                  <Input 
-                    id="email" 
-                    type="email"
-                    {...register("email", { 
-                      required: "Email is required",
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address"
-                      }
-                    })} 
-                    placeholder="contact@example.com"
-                    className={errors.email ? "border-red-500" : ""}
-                  />
-                  {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-                </div>
               </div>
             </div>
 
